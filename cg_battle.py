@@ -1,5 +1,5 @@
 import curses as c
-from funcs import choose
+from funcs import choose, print_text
 from cg_moves import *
 from errors import *
 from curses import napms
@@ -26,19 +26,16 @@ class CGBattle:
         if is_wild and len(opponent_team) > 1:
             raise WildBattleError("More than one wild CGs appearing at once.")
 
-    def print(self, str_to_print):
-        self.text.erase()
-        self.text.addstr(0, 0, str_to_print)
-        self.text.refresh()
-        sleep(1)
+    def show_cg(self, cg, start_y, start_x, is_self=True):
+        for i, line in enumerate(cg.sprite_back if is_self else cg.sprite_front):
+            self.graphics.addstr(start_y + i, start_x, line)
 
     def refresh_graphics(self):
         if self.ran:
             self.graphics.erase()
             self.graphics.refresh()
         else:
-            for i, line in enumerate(self.my_active.sprite_back):
-                self.graphics.addstr(9 + i, 0, line)
+            self.show_cg(self.my_active, 9, 0)
             self.graphics.addstr(6, 1, self.my_active.name)
             self.graphics.addstr(6, 14, "Lv%d" % self.my_active.level)
             my_symbols = int(self.my_active.current_hp * 12 / self.my_active.full_hp) \
@@ -75,36 +72,38 @@ class CGBattle:
                 self.my_active.use_move(self.opponent_active, my_action['arg'])
                 self.refresh_graphics()
                 self.check()
-                self.opponent_active.use_move(self.my_active, opponent_action['arg'])
-                self.refresh_graphics()
-                self.check()
+                if self.opponent_active.alive:
+                    self.opponent_active.use_move(self.my_active, opponent_action['arg'])
+                    self.refresh_graphics()
+                    self.check()
             else:
                 self.opponent_active.use_move(self.my_active, opponent_action['arg'])
                 self.refresh_graphics()
                 self.check()
-                self.my_active.use_move(self.opponent_active, my_action['arg'])
-                self.refresh_graphics()
-                self.check()
+                if self.my_active.alive:
+                    self.my_active.use_move(self.opponent_active, my_action['arg'])
+                    self.refresh_graphics()
+                    self.check()
         elif 'fight' == my_action['type']:
-            self.print("%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
+            print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
             self.opponent_active = opponent_action['arg']
-            self.print("%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
+            print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
             self.refresh_graphics()
             self.my_active.use_move(self.opponent_active, my_action['arg'])
             self.refresh_graphics()
             self.check()
         elif 'fight' == opponent_action['type']:
             if my_action['type'] == 'switch':
-                self.print("Come back, %s!" % self.my_active.name)
+                print_text(self.text, "Come back, %s!" % self.my_active.name)
                 self.my_active = my_action['arg']
-                self.print("You're in charge, %s!" % self.my_active.name)
+                print_text(self.text, "You're in charge, %s!" % self.my_active.name)
                 self.refresh_graphics()
                 self.opponent_active.use_move(self.my_active, opponent_action['arg'])
             elif my_action['type'] == 'run':
                 if self.is_wild:
                     self.ran = True
                 else:
-                    self.print("You can't get away!")
+                    print_text(self.text, "You can't get away!")
                     self.opponent_active.use_move(self.my_active, opponent_action['arg'])
             self.refresh_graphics()
             self.check()
@@ -112,11 +111,9 @@ class CGBattle:
         self.turn_num += 1
 
     def get_my_action(self) -> dict:
-        self.text.erase()
-        self.text.addstr(0, 0, "What will %s do?" % self.my_active.name)
-        self.text.refresh()
         type_map = {'q': 'FIGHT', 'w': 'SWITCH', 'e': 'RUN'}
-        final_type = type_map[choose(self.choice, type_map)].lower()
+        final_type = type_map[choose(self.choice, type_map, self.text, "What will %s do?" % self.my_active.name)]\
+            .lower() if self.my_active.alive else 'switch'
         arg = None
         if final_type == 'fight':
             move_map = {}
@@ -124,6 +121,7 @@ class CGBattle:
                 move_map[['q', 'w', 'e', 's'][i]] = move
             arg = move_map[choose(self.choice, move_map)]
         elif final_type == 'switch':
+            print_text(self.text, "Which CREAGRAM do you wish to switch into?", False)
             cg_info = {}
             cg_map = {}
             for i, cg in enumerate(self.my_team):
@@ -165,13 +163,20 @@ class CGBattle:
         return {'type': final_type, 'arg': arg}
 
     def start_battle(self):
+        if self.is_wild:
+            print_text(self.text, 'A wild %s appeared!' % self.opponent_team[0].name)
+        else:
+            print_text(self.text, '%s challenged you to a battle!' % self.opponent_name)
+            print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_team[0].name))
+        print_text(self.text, "Go! %s!" % self.my_team[0].name)
+
         while self.my_team and self.opponent_team and not self.ran:
             self.exec_turn()
 
         self.text.erase()
         if self.ran:
-            self.text.addstr(0, 0, 'You got away safely!')
+            print_text(self.text, 'You got away safely!', False)
         elif self.my_team:
-            self.text.addstr(0, 0, 'You won the battle!')
+            print_text(self.text, 'You won the battle!', False)
         elif self.opponent_team:
-            self.text.addstr(0, 0, 'You lost the battle...')
+            print_text(self.text, 'You lost the battle...', False)

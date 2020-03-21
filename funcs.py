@@ -63,7 +63,9 @@ def input_str(y, x, scr: c.window, max_len=0, prompt=''):
     return res
 
 
-def choose(scr: c.window, choices: dict):
+def choose(scr: c.window, choices: dict, *args):
+    if args:
+        print_text(args[0], args[1], False)
     scr.erase()
     for i, key in enumerate(choices):
         scr.addstr(i, 0, "%s: %s" % (key.upper(), choices[key]))
@@ -71,12 +73,13 @@ def choose(scr: c.window, choices: dict):
         key = scr.getkey()
         if key in choices.keys():
             scr.erase()
-            scr.refresh()
             return key
 
 
-def add_text(text_scr: c.window, y, x, text, erase=True):
-    if erase:
-        text_scr.erase()
-    text_scr.addstr(y, x, text)
-    text_scr.refresh()
+def print_text(text, str_to_print, pause=True):
+    text.erase()
+    for i, ch in enumerate(str_to_print):
+        text.addch(0, i, ch)
+        c.napms(40)
+    if pause:
+        c.napms(1000)

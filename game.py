@@ -12,9 +12,10 @@ def main(_):
     graphics: c.window = scr.derwin(17, 78, 1, 1)
     text: c.window = scr.derwin(4, 52, 19, 1)
     choice: c.window = scr.derwin(4, 25, 19, 54)
+    text.immedok(True)
+    choice.immedok(True)
     init_borders(scr)
-    sysnake, prenty = Sysnake(text, 45, 'Starter'), Prenty(text, 30)
-    p2 = Prenty(text, 32)
+    sysnake, prenty = Sysnake(text, 100, 'Starter'), Prenty(text, 30)
     my_prenty = Prenty(text, 7, 'Hello')
     '''
     if not os.path.exists('player_info.json'):
@@ -35,8 +36,7 @@ def main(_):
 
     text.getch()'''
 
-    CGBattle([sysnake, my_prenty], [prenty, p2], graphics, text, choice,
-             'RIVAL', False).start_battle()
+    CGBattle([sysnake, my_prenty], [prenty], graphics, text, choice).start_battle()
     text.getch()
 
 
