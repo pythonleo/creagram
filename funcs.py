@@ -1,7 +1,7 @@
 import curses as c
 
 
-def init_borders(scr: c.window):
+def init_borders(scr):
     scr.border('|', '|', '-', '-', '+', '+', '+', '+')
     scr.addstr(18, 0, '+' + '-' * 52 + '+' + '-' * 25 + '+')
     for i in range(4):
@@ -76,10 +76,12 @@ def choose(scr: c.window, choices: dict, *args):
             return key
 
 
-def print_text(text, str_to_print, pause=True):
+def print_text(text, str_to_print, pause: int = 1):
     text.erase()
     for i, ch in enumerate(str_to_print):
         text.addch(0, i, ch)
         c.napms(40)
-    if pause:
+    if pause == 1:
         c.napms(1000)
+    elif pause == -1:
+        text.getch()

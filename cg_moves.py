@@ -14,15 +14,19 @@ class CGMove:
         pass
 
 
-class CGStatMove(CGMove):
-    def __init__(self, stat, factor: float, name, affect_self=False):
+class CGStatusMove(CGMove):
+    def __init__(self, stat, increment_stage: int, name, affect_self=False):
         super().__init__(name)
         self.stat = stat
-        self.factor = factor
+        self.increment_stage = increment_stage
         self.affect_self = affect_self
 
     def use(self, user, opponent):
-        exec("%s.%s *= %f" % ('user' if self.affect_self else 'opponent', self.stat, self.factor))
+        affected = user if self.affect_self else opponent
+        if abs(affected.stat_stages[self.stat]) + abs(self.increment_stage) > 6:
+            return -3
+        exec("%s.stat_stages[%d] += %d" %
+             ('user' if self.affect_self else 'opponent', self.stat, self.increment_stage))
         return -2
 
 
@@ -36,7 +40,9 @@ class CGDmgMove(CGMove):
     def use(self, user, opponent):
         if r() <= self.accuracy:
             eff = opponent.calc_effectiveness(self.type)
-            opponent.current_hp -= eff * self.power * user.attack / opponent.defense
+            opponent.current_stats[0] -= int((self.power * user.current_stats[1] /
+                                          opponent.current_stats[2] *
+                                          ((2 / 5 * user.level + 2) + 2) / 50) * eff)
             return eff
         else:
             return -1
@@ -50,5 +56,5 @@ glitch = CGDmgMove(30, 1, bug, "GLITCH")
 
 weakest = CGDmgMove(0, 0, env, '')
 
-defense_break = CGStatMove('defense', .75, "DEFENSE BREAK")
-display_code = CGStatMove('attack', .5, "DISPLAY CODE")
+defense_break = CGStatusMove(1, -1, "DEFENSE BREAK")
+display_code = CGStatusMove(0, -2, "DISPLAY CODE")

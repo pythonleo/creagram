@@ -1,8 +1,8 @@
 from cg_moves import *
 from cg_sprites import *
 from funcs import print_text
-from errors import *
 from curses import napms
+from settings import stat_multipliers
 
 
 def sleep(s):
@@ -10,15 +10,21 @@ def sleep(s):
 
 
 class Creagram:
-    def __init__(self, sprite_front, sprite_back, name, hp, attack, defense,
-                 speed, move_set, types, level=1, status_win=None):
+    species = ''
+
+    def __init__(self, sprite_front, sprite_back, name, base_stats,
+                 move_set, types, level=1, status_win=None):
         self.sprite_front = sprite_front
         self.sprite_back = sprite_back
         self.name = name
-        self.full_hp = self.current_hp = hp + level * 3
-        self.attack = attack + level * 3
-        self.defense = defense + level * 3
-        self.speed = speed + level * 2
+
+        # All stats are in the format of [HP, Atk, Def, Spe]
+        # except for `stat_stages` which is [Atk, Def, Spe]
+        self.normal_stats = [base_stats[0] * level // 50 + level + 10] +\
+                            [int(base_stats[i] * level // 50 + 5) for i in range(1, 4)]
+        self.current_stats = self.normal_stats[:]
+        self.stat_stages = [0] * 3
+
         self.move_set = move_set
         self.types = types
         self.level = level
@@ -46,27 +52,37 @@ class Creagram:
                     print_text(self.status_win, "It doesn't affect %s..." % opponent.name)
                 elif status_code == -1:
                     print_text(self.status_win, "But it missed!")
-                elif status_code == -2:
+                elif status_code <= -2:
+                    stat_name = {0: 'Attack', 1: "Defense", 2: "Speed"}[move.stat]
+                    change = {-3: "severely fell", -2: "harshly fell", -1: "fell",
+                              1: "rose", 2: "rose sharply", 3: "rose drastically"}[move.increment_stage]\
+                        if status_code == -2 else "won't go any lower"
                     print_text(self.status_win, "%s's %s %s!" % (
-                        self.name if move.affect_self else opponent.name,
-                        move.stat, 'fell' if move.factor < 1 else 'rose'
+                        self.name if move.affect_self else opponent.name, stat_name, change
                     ))
         else:
-            raise InvalidMoveError("Move not in user's move set.")
+            raise ValueError("Move not in user's move set.")
 
     def check(self):
-        if self.current_hp <= 0:
+        if self.current_stats[0] <= 0:
             print_text(self.status_win, "%s fainted!" % self.name)
             self.alive = False
+        else:
+            for stat, stage in enumerate(self.stat_stages):
+                self.current_stats[stat+1] = self.normal_stats[stat+1] * stat_multipliers[stage]
 
 
 class Sysnake(Creagram):
+    species = 'SYSNAKE'
+
     def __init__(self, status_win, level, name="SYSNAKE"):
-        super().__init__(sysnake_sprite_front, sysnake_sprite_back, name, 60, 30, 15, 40,
+        super().__init__(sysnake_sprite_front, sysnake_sprite_back, name, [53, 50, 28, 40],
                          [hazard, defense_break], [env], level, status_win)
 
 
 class Prenty(Creagram):
+    species = 'PRENTY'
+
     def __init__(self, status_win, level, name="PRENTY"):
-        super().__init__(prenty_sprite_front, prenty_sprite_back, name, 55, 23, 30, 44,
+        super().__init__(prenty_sprite_front, prenty_sprite_back, name, [55, 38, 30, 35],
                          [skill_attack, display_code], [skill], level, status_win)
