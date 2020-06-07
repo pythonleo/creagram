@@ -23,8 +23,8 @@ class CGStatusMove(CGMove):
 
     def use(self, user, opponent):
         affected = user if self.affect_self else opponent
-        if abs(affected.stat_stages[self.stat]) + abs(self.increment_stage) > 6:
-            return -3
+        if abs(affected.stat_stages[self.stat] + self.increment_stage) > 6:
+            return -3 if self.increment_stage > 0 else -4
         exec("%s.stat_stages[%d] += %d" %
              ('user' if self.affect_self else 'opponent', self.stat, self.increment_stage))
         return -2
