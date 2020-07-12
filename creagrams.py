@@ -26,6 +26,7 @@ class Creagram:
 
         # All stats are in the format of [HP, Atk, Def, Spe]
         # except for `stat_stages` which is [Atk, Def, Spe]
+        self.base_stats = base_stats
         self.normal_stats = [base_stats[0] * level // 50 + level + 10] +\
                             [int(base_stats[i] * level // 50 + 5) for i in range(1, 4)]
         self.current_stats = self.normal_stats[:]
@@ -38,6 +39,13 @@ class Creagram:
         self.alive = True
 
         self.exp = base_exp[self.exp_group][self.level]
+
+    def lv_up(self):
+        self.level += 1
+        self.normal_stats = [self.base_stats[0] * self.level // 50 + self.level + 10] + \
+                             [int(self.base_stats[i] * self.level // 50 + 5) for i in range(1, 4)]
+        self.current_stats = self.normal_stats[:]
+        self.check()
 
     def calc_effectiveness(self, opponent_type):
         """Calculates the effectiveness of a move hitting this CG."""
@@ -55,7 +63,7 @@ class Creagram:
         while self.exp >= base_exp[self.exp_group][self.level + 1]:
             print_text(self.status_win,
                        "%s grew to Lv. %d!" % (self.name, self.level + 1))
-            self.level += 1
+            self.lv_up()
 
     def use_move(self, opponent, move):
         """Use a move on an opponent"""
