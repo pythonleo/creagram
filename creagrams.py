@@ -2,7 +2,7 @@ from cg_moves import *
 from cg_sprites import *
 from funcs import print_text
 from curses import napms
-from settings import stat_multipliers
+from settings import *
 
 
 def sleep(s):
@@ -16,6 +16,7 @@ class Creagram:
     """
 
     species = ''
+    exp_group = None
 
     def __init__(self, sprite_front, sprite_back, name, base_stats,
                  move_set, types, level=1, status_win=None):
@@ -36,6 +37,8 @@ class Creagram:
         self.status_win = status_win
         self.alive = True
 
+        self.exp = base_exp[self.exp_group][self.level]
+
     def calc_effectiveness(self, opponent_type):
         """Calculates the effectiveness of a move hitting this CG."""
         res = 1
@@ -43,6 +46,16 @@ class Creagram:
             res *= my_type.calc_effectiveness(opponent_type)
 
         return res
+
+    def gain_exp(self, exp):
+        """Gives the CG experience points."""
+        print_text(self.status_win,
+                   "%s gained %d Exp. Points!" % (self.name, exp))
+        self.exp += exp
+        while self.exp >= base_exp[self.exp_group][self.level + 1]:
+            print_text(self.status_win,
+                       "%s grew to Lv. %d!" % (self.name, self.level + 1))
+            self.level += 1
 
     def use_move(self, opponent, move):
         """Use a move on an opponent"""
@@ -94,6 +107,7 @@ class Sysnake(Creagram):
     """For having a correct Python installation in the system."""
 
     species = 'SYSNAKE'
+    exp_group = 'slow'
 
     def __init__(self, status_win, level, name="SYSNAKE"):
         super().__init__(sysnake_sprite_front, sysnake_sprite_back, name, [53, 50, 28, 40],
@@ -104,6 +118,7 @@ class Prenty(Creagram):
     """For being able to print."""
 
     species = 'PRENTY'
+    exp_group = 'slow'
 
     def __init__(self, status_win, level, name="PRENTY"):
         super().__init__(prenty_sprite_front, prenty_sprite_back, name, [55, 38, 30, 35],

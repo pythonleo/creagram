@@ -14,8 +14,9 @@ def main(_):
     text.immedok(True)
     choice.immedok(True)
     init_borders(scr)
-    sysnake, prenty = Sysnake(text, 80, 'Starter'), Prenty(text, 70)
-    Opponent('X', 'Let\'s battle!', 'I lost...', [prenty], rival_battle_sprite).on_interacted_with(
+    sysnake = Sysnake(text, 10, 'Starter')
+    Opponent('X', 'Let\'s battle!', 'I lost...', [Prenty(text, 1), Prenty(text, 1)],
+             rival_battle_sprite).on_interacted_with(
         Trainer('PLAYER', [sysnake], player_battle_sprite), graphics, text, choice
     )
 

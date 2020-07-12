@@ -1,6 +1,7 @@
 import curses as c
 from funcs import choose, print_text
 from cg_moves import *
+from settings import base_exp
 
 
 class CGBattle:
@@ -22,17 +23,24 @@ class CGBattle:
         if is_wild and len(self.opponent_team) > 1:
             raise ValueError("More than one wild CGs appearing at once.")
 
+        self.participated = [self.my_active]
+
     def show_my_cg(self):
         for i, line in enumerate(self.my_active.sprite_back):
             self.graphics.addstr(9 + i, 0, line)
         self.graphics.addstr(6, 1, self.my_active.name)
         self.graphics.addstr(6, 14, "Lv%d" % self.my_active.level)
-        my_symbols = int(self.my_active.current_stats[0] * 12 / self.my_active.normal_stats[0]) \
+        my_hp_symbols = int(self.my_active.current_stats[0] * 12 / self.my_active.normal_stats[0]) \
             if self.my_active.current_stats[0] > 0 else 0
         self.graphics.addstr(7, 1, "HP:|%s|" %
-                             ('#' * my_symbols + ' ' * (12 - my_symbols)))
-        self.graphics.addstr(8, 6, "%d/%d     " %
+                             ('#' * my_hp_symbols + ' ' * (12 - my_hp_symbols)))
+        self.graphics.addstr(7, 18, "%d/%d     " %
                              (int(self.my_active.current_stats[0]), self.my_active.normal_stats[0]))
+        exp_symbols = int((self.my_active.exp -
+                          base_exp[self.my_active.exp_group][self.my_active.level])
+                          * 12 / (base_exp[self.my_active.exp_group][self.my_active.level + 1]
+                                  - base_exp[self.my_active.exp_group][self.my_active.level]))
+        self.graphics.addstr(8, 1, "Exp:%s|" % ('-' * exp_symbols + ' ' * (12 - exp_symbols)))
         self.graphics.refresh()
 
     def show_opponent_cg(self):
@@ -71,6 +79,8 @@ class CGBattle:
                 self.my_team.remove(self.my_active)
         self.opponent_active.check()
         if not self.opponent_active.alive:
+            self.my_active.gain_exp(1000)
+            self.show_my_cg()
             if self.opponent_active in self.opponent_team:
                 self.opponent_team.remove(self.opponent_active)
 
@@ -96,9 +106,11 @@ class CGBattle:
                     self.refresh_graphics()
                     self.check()
         elif 'fight' == my_action['type']:
-            print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
+            if self.opponent_active.alive:
+                print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
             self.opponent_active = opponent_action['arg']
             print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
+            self.participated = [self.my_active]
             self.refresh_graphics()
             self.my_active.use_move(self.opponent_active, my_action['arg'])
             self.refresh_graphics()
@@ -108,6 +120,7 @@ class CGBattle:
                 print_text(self.text, "Come back, %s!" % self.my_active.name)
                 self.my_active = my_action['arg']
                 print_text(self.text, "You're in charge, %s!" % self.my_active.name)
+                self.participated.append(self.my_active)
                 self.refresh_graphics()
                 self.opponent_active.use_move(self.my_active, opponent_action['arg'])
             elif my_action['type'] == 'run':
@@ -199,7 +212,9 @@ class CGBattle:
         if self.ran:
             print_text(self.text, 'You got away safely!', -1)
         elif self.my_team:
-            if not self.is_wild:
+            if self.is_wild:
+                pass
+            else:
                 print_text(self.text, self.opponent.lose_text, -1)
         elif self.opponent_team:
             print_text(self.text, 'You have no usable CREAGRAM\'s left!')
