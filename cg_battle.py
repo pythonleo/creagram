@@ -97,6 +97,12 @@ class CGBattle:
                     self.opponent_active.use_move(self.my_active, opponent_action['arg'])
                     self.refresh_graphics()
                     self.check()
+                else:
+                    opponent_action = self.ai_get_opponent_action()
+                    self.opponent_active = opponent_action['arg']
+                    if self.opponent_active:
+                        print_text(self.text, "%s sent out %s!" %
+                                   (self.opponent_name, self.opponent_active.name))
             else:
                 self.opponent_active.use_move(self.my_active, opponent_action['arg'])
                 self.refresh_graphics()
@@ -105,16 +111,21 @@ class CGBattle:
                     self.my_active.use_move(self.opponent_active, my_action['arg'])
                     self.refresh_graphics()
                     self.check()
+                else:
+                    my_action = self.ai_get_opponent_action()
+                    self.my_active = my_action['arg']
+                    print_text(self.text, "Go! %s!" % self.my_active.name)
         elif 'fight' == my_action['type']:
-            if self.opponent_active.alive:
-                print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
-            self.opponent_active = opponent_action['arg']
-            print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
-            self.participated = [self.my_active]
-            self.refresh_graphics()
-            self.my_active.use_move(self.opponent_active, my_action['arg'])
-            self.refresh_graphics()
-            self.check()
+            if opponent_action['type'] == 'switch':
+                if self.opponent_active.alive:
+                    print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
+                self.opponent_active = opponent_action['arg']
+                print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
+                self.participated = [self.my_active]
+                self.refresh_graphics()
+                self.my_active.use_move(self.opponent_active, my_action['arg'])
+                self.refresh_graphics()
+                self.check()
         elif 'fight' == opponent_action['type']:
             if my_action['type'] == 'switch':
                 print_text(self.text, "Come back, %s!" % self.my_active.name)
