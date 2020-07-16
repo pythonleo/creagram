@@ -43,6 +43,8 @@ class CGDmgMove(CGMove):
             opponent.current_stats[0] -= int((self.power * user.current_stats[1] /
                                           opponent.current_stats[2] *
                                           ((2 / 5 * user.level + 2) + 2) / 50) * eff)
+            if(opponent.current_stats[0] < 0):
+                opponent.current_stats[0] = 0
             return eff
         else:
             return -1

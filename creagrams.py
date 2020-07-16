@@ -130,4 +130,4 @@ class Prenty(Creagram):
 
     def __init__(self, status_win, level, name="PRENTY"):
         super().__init__(prenty_sprite_front, prenty_sprite_back, name, [55, 38, 30, 35],
-                         [skill_attack, display_code], [skill], level, status_win)
+                         [skill_attack, display_code, lock_throw], [skill], level, status_win)

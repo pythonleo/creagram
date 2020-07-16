@@ -111,8 +111,8 @@ class CGBattle:
                     self.my_active.use_move(self.opponent_active, my_action['arg'])
                     self.refresh_graphics()
                     self.check()
-                else:
-                    my_action = self.ai_get_opponent_action()
+                elif self.my_team:
+                    my_action = self.get_my_action()
                     self.my_active = my_action['arg']
                     print_text(self.text, "Go! %s!" % self.my_active.name)
         elif 'fight' == my_action['type']:
@@ -161,7 +161,7 @@ class CGBattle:
             cg_map = {}
             for i, cg in enumerate(self.my_team):
                 cg_info[['q', 'w', 'e', 'a', 's', 'd'][i]] =\
-                    "%s   Lv%d   HP: %d/%d" % (cg.name, cg.level, int(cg.current_hp), cg.full_hp)
+                    "%s   Lv%d   HP: %d/%d" % (cg.name, cg.level, int(cg.current_stats[0]), cg.normal_stats[0])
                 cg_map[['q', 'w', 'e', 'a', 's', 'd'][i]] = cg
             arg = cg_map[choose(self.graphics, cg_info)]
 
