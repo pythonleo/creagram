@@ -1,6 +1,6 @@
 from funcs import *
 from creagrams import *
-from interactive import *
+from map_obj import *
 from trainer_sprites import *
 
 
@@ -15,9 +15,9 @@ def main(_):
     choice.immedok(True)
     init_borders(scr)
     sysnake = Sysnake(text, 10, 'Starter')
-    Opponent('X', 'Let\'s battle!', 'I lost...', [Prenty(text, 90)],
+    Opponent((0, 0), 'X', 'Let\'s battle!', 'I lost...', [Prenty(text, 90)],
              rival_battle_sprite).on_interacted_with(
-        Trainer('PLAYER', [sysnake, Prenty(text, 1)], player_battle_sprite), graphics, text, choice
+        Trainer((0, 0), 'PLAYER', [sysnake, Prenty(text, 1)], player_battle_sprite), graphics, text, choice
     )
 
 
