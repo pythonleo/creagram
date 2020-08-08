@@ -51,9 +51,14 @@ class Opponent(Trainer, Interactive):
         self.overworld_text = [start_text]
         self.actions = {0: self.start_battle_with_self}
 
+        self.battled = False
+
     def start_battle_with_self(self, player, graphics, text, choice):
-        from cg_battle import CGBattle
-        CGBattle(player, self, graphics, text, choice, False).start_battle()
+        if not self.battled:
+            from cg_battle import CGBattle
+            CGBattle(player, self, graphics, text, choice, False).start_battle()
+            self.battled = True
+            self.overworld_text = [self.lose_text]
 
 
 class PlayerOnMap(MapObject):
