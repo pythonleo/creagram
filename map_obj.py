@@ -29,6 +29,12 @@ class Interactive:
                 self.actions[i](player, graphics, text, choice)
 
 
+class InterTest(MapObject, Interactive):
+    def __init__(self, y, x):
+        super().__init__(y, x, 'i')
+        self.overworld_text = ['hello world']
+
+
 class Trainer(MapObject):
     def __init__(self, pos, name, team: list, sprite, repr_char=None):
         super().__init__(pos[0], pos[1], repr_char if repr_char else name[0])

@@ -36,3 +36,6 @@ exp_yield = {
     "SYSNAKE": 63,
     "PRENTY": 51,
 }
+
+# map settings
+default_player_pos = (10, 10)
