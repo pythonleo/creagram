@@ -3,9 +3,8 @@ from funcs import *
 from settings import default_player_pos
 
 
-def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player_data):
+def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
     main_map = area = Map(size[0], size[1], objects)
-    player = PlayerOnMap()
 
     gfx.keypad(True)
 
@@ -61,7 +60,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player_data):
                 player.start_x += 1
         elif ch in (c.KEY_ENTER, 10):
             if isinstance(looking_at, Interactive):
-                looking_at.on_interacted_with(player_data, gfx, text, choice)
+                looking_at.on_interacted_with(player, gfx, text, choice)
         elif ch == ord('q'):
             raise ValueError('exit')
 

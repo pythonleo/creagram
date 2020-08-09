@@ -1,5 +1,6 @@
 from funcs import print_text
 import curses as c
+from trainer_sprites import player_battle_sprite
 
 
 class Map:
@@ -41,6 +42,11 @@ class Trainer(MapObject):
         self.name = name
         self.team = team
         self.sprite = sprite
+
+
+class Player(Trainer):
+    def __init__(self, name, team):
+        super().__init__((10, 10), name, team, player_battle_sprite)
 
 
 class Opponent(Trainer, Interactive):

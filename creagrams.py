@@ -38,12 +38,12 @@ class Creagram:
         self.status_win = status_win
         self.alive = True
 
-        self.exp = base_exp[self.exp_group][self.level]
+        self.exp = base_exp[self.exp_group][self.level - 1]
 
     def lv_up(self):
         self.level += 1
         self.normal_stats = [self.base_stats[0] * self.level // 50 + self.level + 10] + \
-                             [int(self.base_stats[i] * self.level // 50 + 5) for i in range(1, 4)]
+                            [int(self.base_stats[i] * self.level // 50 + 5) for i in range(1, 4)]
         self.current_stats = self.normal_stats[:]
         self.check()
 
@@ -60,7 +60,7 @@ class Creagram:
         print_text(self.status_win,
                    "%s gained %d Exp. Points!" % (self.name, exp))
         self.exp += exp
-        while self.exp >= base_exp[self.exp_group][self.level + 1]:
+        while self.exp >= base_exp[self.exp_group][self.level]:
             print_text(self.status_win,
                        "%s grew to Lv. %d!" % (self.name, self.level + 1))
             self.lv_up()

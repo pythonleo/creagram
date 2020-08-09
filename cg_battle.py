@@ -37,9 +37,9 @@ class CGBattle:
         self.graphics.addstr(7, 18, "%d/%d     " %
                              (int(self.my_active.current_stats[0]), self.my_active.normal_stats[0]))
         exp_symbols = int((self.my_active.exp -
-                          base_exp[self.my_active.exp_group][self.my_active.level])
-                          * 12 / (base_exp[self.my_active.exp_group][self.my_active.level + 1]
-                                  - base_exp[self.my_active.exp_group][self.my_active.level]))
+                          base_exp[self.my_active.exp_group][self.my_active.level - 1])
+                          * 12 / (base_exp[self.my_active.exp_group][self.my_active.level]
+                                  - base_exp[self.my_active.exp_group][self.my_active.level - 1]))
         self.graphics.addstr(8, 1, "Exp:%s|" % ('-' * exp_symbols + ' ' * (12 - exp_symbols)))
         self.graphics.refresh()
 

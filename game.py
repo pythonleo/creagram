@@ -19,8 +19,8 @@ def main(_):
     scr.refresh()
     scr.keypad(True)
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100),
-              [Opponent((5, 5), '??', "Let's battle!", "I lost...", [Prenty(text, 70)], rival_battle_sprite)],
-              Trainer((0, 0), 'PLAYER', [Sysnake(text, 90, 'Snaky')], player_battle_sprite))
+              [Opponent((5, 5), 'RIVAL', "Let's battle!", "I lost...", [Prenty(text, 70)], rival_battle_sprite)],
+              Player("PLAYER", [Sysnake(text, 99, "Snaky")]))
 
 
 c.wrapper(main)
