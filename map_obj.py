@@ -29,6 +29,9 @@ class Interactive:
             if i in self.actions.keys():
                 self.actions[i](player, graphics, text, choice)
 
+        text.erase()
+        choice.erase()
+
 
 class InterTest(MapObject, Interactive):
     def __init__(self, y, x):

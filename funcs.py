@@ -85,4 +85,3 @@ def print_text(text, str_to_print, pause: int = 1):
         c.napms(1000)
     elif pause == -1:
         text.getch()
-    text.erase()

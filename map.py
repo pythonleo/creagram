@@ -6,8 +6,6 @@ from settings import default_player_pos
 def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
     main_map = area = Map(size[0], size[1], objects)
 
-    gfx.keypad(True)
-
     y_now, x_now = 0, 0
 
     forbidden = {}
