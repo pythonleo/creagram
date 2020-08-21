@@ -36,26 +36,37 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                 if (player.start_y - 1, player.start_x) in forbidden:
                     looking_at = forbidden[(player.start_y - 1, player.start_x)]
                 else:
+                    looking_at = None
                     player.start_y -= 1
         elif ch in (c.KEY_DOWN, 456):
             if default_player_pos[0] <= player.start_y < main_map.height - 2\
                     and (player.start_y + 1, player.start_x) not in forbidden:
                 y_now += 1
-            if player.start_y < main_map.height - 2\
-                    and (player.start_y + 1, player.start_x) not in forbidden:
-                player.start_y += 1
+            if player.start_y < main_map.height - 2:
+                if (player.start_y + 1, player.start_x) in forbidden:
+                    looking_at = forbidden[(player.start_y + 1, player.start_x)]
+                else:
+                    looking_at = None
+                    player.start_y += 1
         elif ch in (c.KEY_LEFT, 452):
             if x_now > 0 and (player.start_y, player.start_x - 1) not in forbidden:
                 x_now -= 1
-            if player.start_x > 0 and (player.start_y, player.start_x - 1) not in forbidden:
-                player.start_x -= 1
+            if player.start_x > 0:
+                if (player.start_y, player.start_x - 1) in forbidden:
+                    looking_at = forbidden[(player.start_y, player.start_x - 1)]
+                else:
+                    looking_at = None
+                    player.start_x -= 1
         elif ch in (c.KEY_RIGHT, 454):
             if default_player_pos[1] <= player.start_x < main_map.width - 2\
                     and (player.start_y, player.start_x + 1) not in forbidden:
                 x_now += 1
-            if player.start_x < main_map.width - 2\
-                    and (player.start_y, player.start_x + 1) not in forbidden:
-                player.start_x += 1
+            if player.start_x < main_map.width - 2:
+                if (player.start_y, player.start_x + 1) in forbidden:
+                    looking_at = forbidden[(player.start_y, player.start_x + 1)]
+                else:
+                    looking_at = None
+                    player.start_x += 1
         elif ch in (c.KEY_ENTER, 10):
             if isinstance(looking_at, Interactive):
                 looking_at.on_interacted_with(player, gfx, text, choice)
