@@ -10,6 +10,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
 
     forbidden = {}
     doors = {}
+    triggers = {}
     for o in main_map.obj:
         if o.block:
             for y in range(o.start_y, o.start_y + len(o.string_shown.split('\n'))):
@@ -18,6 +19,18 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                         doors[(y, x)] = (o.door['map'], o.door['exit'])
                     else:
                         forbidden[(y, x)] = o
+
+                    if isinstance(o, Interactive) and o.detect:
+                        is_x = o.detect[0] == 'x'
+                        main_axis = eval("o.start_%s" % o.detect[0])
+                        other_axis = eval("o.start_%s" % {'x': 'y', 'y': 'x'}[o.detect[0]])
+                        for i in range(main_axis, main_axis + o.detect[1]):
+                            triggers[(other_axis, i) if is_x else (i, other_axis)] = o
+
+    def check_trigger():
+        if (player.start_y, player.start_x) in triggers:
+            triggers[(player.start_y, player.start_x)]\
+                .on_interacted_with(player, gfx, text, choice)
 
     looking_at = None
     while True:
@@ -38,6 +51,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                 else:
                     looking_at = None
                     player.start_y -= 1
+                    check_trigger()
         elif ch in (c.KEY_DOWN, 456):
             if default_player_pos[0] <= player.start_y < main_map.height - 2\
                     and (player.start_y + 1, player.start_x) not in forbidden:
@@ -48,6 +62,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                 else:
                     looking_at = None
                     player.start_y += 1
+                    check_trigger()
         elif ch in (c.KEY_LEFT, 452):
             if x_now > 0 and (player.start_y, player.start_x - 1) not in forbidden:
                 x_now -= 1
@@ -57,6 +72,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                 else:
                     looking_at = None
                     player.start_x -= 1
+                    check_trigger()
         elif ch in (c.KEY_RIGHT, 454):
             if default_player_pos[1] <= player.start_x < main_map.width - 2\
                     and (player.start_y, player.start_x + 1) not in forbidden:
@@ -67,6 +83,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                 else:
                     looking_at = None
                     player.start_x += 1
+                    check_trigger()
         elif ch in (c.KEY_ENTER, 10):
             if isinstance(looking_at, Interactive):
                 looking_at.on_interacted_with(player, gfx, text, choice)
@@ -87,3 +104,12 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                                 doors[(y, x)] = (o.door['map'], o.door['exit'])
                             else:
                                 forbidden.append((y, x))
+
+        triggers = {}
+        for o in main_map.obj:
+            if isinstance(o, Interactive) and o.detect:
+                is_x = o.detect[0] == 'x'
+                main_axis = eval("o.start_%s" % o.detect[0])
+                other_axis = eval("o.start_%s" % {'x': 'y', 'y': 'x'}[o.detect[0]])
+                for i in range(main_axis, main_axis + o.detect[1]):
+                    triggers[(other_axis, i) if is_x else (i, other_axis)] = o

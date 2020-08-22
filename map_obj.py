@@ -23,6 +23,10 @@ class Interactive:
     overworld_text = []
     actions = {}         # {after_text_id: func}
 
+    def __init__(self, start_y, start_x, string_shown, block=True, detect=None):
+        super().__init__(start_y, start_x, string_shown, block)
+        self.detect = detect
+
     def on_interacted_with(self, player, graphics, text, choice):
         for i, txt in enumerate(self.overworld_text):
             print_text(text, txt, -1)
@@ -53,8 +57,9 @@ class Player(Trainer):
 
 
 class Opponent(Trainer, Interactive):
-    def __init__(self, pos, name, start_text, lose_text, team: list, sprite, repr_char=None):
+    def __init__(self, pos, name, start_text, lose_text, team: list, sprite, repr_char=None, detect=None):
         super().__init__(pos, name, team, sprite, repr_char)
+        self.detect = detect
         self.start_text = start_text
         self.lose_text = lose_text
         self.overworld_text = [start_text]
@@ -68,6 +73,7 @@ class Opponent(Trainer, Interactive):
             CGBattle(player, self, graphics, text, choice, False).start_battle()
             self.battled = True
             self.overworld_text = [self.lose_text]
+            self.detect = None
 
 
 class PlayerOnMap(MapObject):
