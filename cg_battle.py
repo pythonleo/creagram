@@ -85,10 +85,14 @@ class CGBattle:
             else:
                 delta_exp = exp_yield[self.opponent_active.name]\
                             * (1 if self.is_wild else 1.5) * self.opponent_active.level / 5
-                delta_exp *= int(((2 * self.opponent_active.level + 10) /
-                                  (self.my_active.level + self.opponent_active.level + 10)) ** 2.5)
+                delta_exp *= ((2 * self.opponent_active.level + 10) /
+                              (self.my_active.level + self.opponent_active.level + 10)) ** 2.5
                 delta_exp += 1
-            self.my_active.gain_exp(delta_exp)
+
+            delta_exp /= len(self.participated)
+            delta_exp = int(delta_exp)
+            for cg in self.participated:
+                cg.gain_exp(delta_exp)
             self.show_my_cg()
             if self.opponent_active in self.opponent_team:
                 self.opponent_team.remove(self.opponent_active)
@@ -130,7 +134,6 @@ class CGBattle:
                     print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
                 self.opponent_active = opponent_action['arg']
                 print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
-                self.participated = [self.my_active]
                 self.refresh_graphics()
                 self.my_active.use_move(self.opponent_active, my_action['arg'])
                 self.refresh_graphics()
@@ -140,7 +143,8 @@ class CGBattle:
                 print_text(self.text, "Come back, %s!" % self.my_active.name)
                 self.my_active = my_action['arg']
                 print_text(self.text, "You're in charge, %s!" % self.my_active.name)
-                self.participated.append(self.my_active)
+                if self.my_active not in self.participated:
+                    self.participated.append(self.my_active)
                 self.refresh_graphics()
                 self.opponent_active.use_move(self.my_active, opponent_action['arg'])
             elif my_action['type'] == 'run':
