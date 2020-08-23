@@ -50,7 +50,7 @@ class CGDmgMove(CGMove):
             return -1
 
 
-hazard = CGDmgMove(30, 1, env, "HAZARD")
+hazard = CGDmgMove(300000000000000, 1, env, "HAZARD")                # normally 30 power; changed for testing purposes
 skill_attack = CGDmgMove(30, 1, skill, "SKILL ATTACK")
 viral_wave = CGDmgMove(30, 1, virus, "VIRAL WAVE")
 lock_throw = CGDmgMove(30, 1, secure, "LOCK THROW")

@@ -1,7 +1,7 @@
 import curses as c
 from funcs import choose, print_text
 from cg_moves import *
-from settings import base_exp
+from settings import base_exp, exp_yield
 
 
 class CGBattle:
@@ -79,7 +79,16 @@ class CGBattle:
                 self.my_team.remove(self.my_active)
         self.opponent_active.check()
         if not self.opponent_active.alive:
-            self.my_active.gain_exp(1000)
+            if self.my_active.level == self.opponent_active.level:
+                delta_exp = exp_yield[self.opponent_active.name]\
+                            * (1 if self.is_wild else 1.5) * self.my_active.level // 7
+            else:
+                delta_exp = exp_yield[self.opponent_active.name]\
+                            * (1 if self.is_wild else 1.5) * self.opponent_active.level / 5
+                delta_exp *= int(((2 * self.opponent_active.level + 10) /
+                                  (self.my_active.level + self.opponent_active.level + 10)) ** 2.5)
+                delta_exp += 1
+            self.my_active.gain_exp(delta_exp)
             self.show_my_cg()
             if self.opponent_active in self.opponent_team:
                 self.opponent_team.remove(self.opponent_active)

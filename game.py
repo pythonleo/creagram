@@ -18,8 +18,8 @@ def main(_):
     graphics.keypad(True)
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100),
               [Opponent((5, 5), 'RIVAL', "Let's battle!", "I lost...",
-                        [Prenty(text, 1)], rival_battle_sprite, detect=('y', 5))],
-              Player("PLAYER", [Sysnake(text, 99, "Snaky")]))
+                        [Prenty(text, 99)], rival_battle_sprite, detect=('y', 5))],
+              Player("PLAYER", [Sysnake(text, 1, "Snaky")]))
 
 
 c.wrapper(main)
