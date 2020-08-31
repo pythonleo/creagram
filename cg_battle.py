@@ -132,6 +132,8 @@ class CGBattle:
             if opponent_action['type'] == 'switch':
                 if self.opponent_active.alive:
                     print_text(self.text, "%s withdrew %s!" % (self.opponent_name, self.opponent_active.name))
+                    self.opponent_active.current_stats = self.opponent_active.normal_stats[:]
+                    self.opponent_active.stat_stages = [0] * 3
                 self.opponent_active = opponent_action['arg']
                 print_text(self.text, "%s sent out %s!" % (self.opponent_name, self.opponent_active.name))
                 self.refresh_graphics()
@@ -141,6 +143,8 @@ class CGBattle:
         elif 'fight' == opponent_action['type']:
             if my_action['type'] == 'switch':
                 print_text(self.text, "Come back, %s!" % self.my_active.name)
+                self.my_active.current_stats = self.my_active.normal_stats[:]
+                self.my_active.stat_stages = [0] * 3
                 self.my_active = my_action['arg']
                 print_text(self.text, "You're in charge, %s!" % self.my_active.name)
                 if self.my_active not in self.participated:
@@ -243,3 +247,6 @@ class CGBattle:
         elif self.opponent_team:
             print_text(self.text, 'You have no usable CREAGRAM\'s left!')
             print_text(self.text, 'You blacked out!', -1)
+
+        self.my_active.current_stats = self.my_active.normal_stats[:]
+        self.my_active.stat_stages = [0] * 3
