@@ -9,6 +9,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
     y_now, x_now = 0, 0
 
     forbidden = {}
+    step_event = {}
     doors = {}
     triggers = {}
     for o in main_map.obj:
@@ -26,10 +27,17 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
                         other_axis = eval("o.start_%s" % {'x': 'y', 'y': 'x'}[o.detect[0]])
                         for i in range(main_axis, main_axis + o.detect[1]):
                             triggers[(other_axis, i) if is_x else (i, other_axis)] = o
+        elif isinstance(o, Interactive):
+            for y in range(o.start_y, o.start_y + len(o.string_shown.split('\n'))):
+                for x in range(o.start_x, o.start_x + len(o.string_shown.split('\n')[0])):
+                    step_event[(y, x)] = o
 
     def check_trigger():
         if (player.start_y, player.start_x) in triggers:
             triggers[(player.start_y, player.start_x)]\
+                .on_interacted_with(player, gfx, text, choice)
+        elif (player.start_y, player.start_x) in step_event:
+            step_event[(player.start_y, player.start_x)]\
                 .on_interacted_with(player, gfx, text, choice)
 
     looking_at = None

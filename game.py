@@ -1,7 +1,7 @@
 from funcs import *
 from creagrams import *
 from map_obj import *
-from trainer_sprites import *
+# from trainer_sprites import *
 from map import start_map
 
 
@@ -17,9 +17,10 @@ def main(_):
     init_borders(scr)
     graphics.keypad(True)
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100),
-              [Opponent((5, 5), 'RIVAL', "Let's battle!", "I lost...",
-                        [Prenty(text, 30)], rival_battle_sprite, detect=('y', 5))],
-              Player("PLAYER", [Prenty(text, 1), Sysnake(text, 32, "Snaky")]))
+              [GrassPatch(2, 2, 10, 10, [
+                  (1, "Prenty"), (.1, "Sysnake")
+              ], [49, 50, 51])],
+              Player("PLAYER", [Sysnake(text, 30, "Snaky"), Prenty(text, 50)]))
 
 
 c.wrapper(main)

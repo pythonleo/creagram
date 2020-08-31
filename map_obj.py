@@ -1,5 +1,8 @@
-from funcs import print_text
 import curses as c
+from random import random, choice as rand_choice
+
+from cg_battle import CGBattle
+from funcs import print_text
 from trainer_sprites import player_battle_sprite
 
 
@@ -19,7 +22,7 @@ class MapObject:
         self.door = door
 
 
-class Interactive:
+class Interactive(MapObject):
     overworld_text = []
     actions = {}         # {after_text_id: func}
 
@@ -37,10 +40,29 @@ class Interactive:
         choice.erase()
 
 
-class InterTest(MapObject, Interactive):
-    def __init__(self, y, x):
-        super().__init__(y, x, 'i')
-        self.overworld_text = ['hello world']
+class GrassPatch(Interactive):
+    """
+    A patch of "grass" that spawns wild CGs.
+    The `spawn` list holds the spawning info:
+    - Each item is a tuple with 2 elements.
+    - The first element is the spawn rate of a given CG
+      *plus the element before itself*; this is for more elegant code.
+    - The second element is the name of this CG.
+    """
+    def __init__(self, start_y, start_x, height, width, spawn: list, levels: list):
+        super().__init__(start_y, start_x, ('/' * width + '\n') * height, False)
+        self.spawn = spawn
+        self.levels = levels
+
+    def on_interacted_with(self, player, graphics, text, choice):
+        rand = random()
+        for chance, species in self.spawn:
+            if rand < chance:
+                import creagrams as cg  # noqa (used in eval(), PC doesn't know that)
+                CGBattle(player, eval("cg.%s(text, %d)"
+                                      % (species, rand_choice(self.levels))),
+                         graphics, text, choice).start_battle()
+                break
 
 
 class Trainer(MapObject):
@@ -69,7 +91,6 @@ class Opponent(Trainer, Interactive):
 
     def start_battle_with_self(self, player, graphics, text, choice):
         if not self.battled:
-            from cg_battle import CGBattle
             CGBattle(player, self, graphics, text, choice, False).start_battle()
             self.battled = True
             self.overworld_text = [self.lose_text]
