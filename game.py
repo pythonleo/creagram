@@ -16,10 +16,9 @@ def main(_):
     choice.immedok(True)
     init_borders(scr)
     graphics.keypad(True)
+    house = Map(12, 12, [MapObject(2, 2, 'a')])
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100),
-              [GrassPatch(2, 2, 10, 10, [
-                  (.1, "Prenty")
-              ], [4, 5])],
+              [MapObject(3, 3, " ______ \n/______\\\n|______|", map=house, pos=(2, 2), exit=(10, 5), transport=(9, 5))],
               Player("PLAYER", [Sysnake(text, 5, "Snaky")]))
 
 

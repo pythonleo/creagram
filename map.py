@@ -17,7 +17,8 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
             for y in range(o.start_y, o.start_y + len(o.string_shown.split('\n'))):
                 for x in range(o.start_x, o.start_x + len(o.string_shown.split('\n')[0])):
                     if o.door and (y - o.start_y, x - o.start_x) == o.door['pos']:
-                        doors[(y, x)] = (o.door['map'], o.door['exit'])
+                        doors[(y, x)] = (o.door['map'], o.door['exit'], o.door['transport'],
+                                         (o.door['pos'][0] + o.start_y + 1, o.door['pos'][1] + o.start_x))
                     else:
                         forbidden[(y, x)] = o
 
@@ -101,17 +102,21 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
         if (player.start_y, player.start_x) in doors:
             to_go = doors[(player.start_y, player.start_x)]
             main_map = to_go[0]
+            player.start_y, player.start_x = to_go[2]
+            y_now, x_now = 0, 0
             gfx.erase()
-            forbidden = []
-            doors = {(to_go[1]): (area, None)}
+            forbidden = {}
+            doors = {(to_go[1]): (area, None, to_go[3], None)}
             for o in main_map.obj:
                 if o.block:
                     for y in range(o.start_y, o.start_y + len(o.string_shown.split('\n'))):
                         for x in range(o.start_x, o.start_x + len(o.string_shown.split('\n')[0])):
                             if o.door and (y - o.start_y, x - o.start_x) == o.door['pos']:
-                                doors[(y, x)] = (o.door['map'], o.door['exit'])
+                                doors[(y, x)] = (o.door['map'], o.door['exit'], o.door['transport'],
+                                                 (o.door['pos'][0] + o.start_y + 1,
+                                                  o.door['pos'][1] + o.start_x))
                             else:
-                                forbidden.append((y, x))
+                                forbidden[(y, x)] = o
 
         triggers = {}
         for o in main_map.obj:
