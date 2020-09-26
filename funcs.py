@@ -85,3 +85,13 @@ def print_text(text, str_to_print, pause: int = 1):
         c.napms(1000)
     elif pause == -1:
         text.getch()
+
+
+def show_team(gfx: c.window, team: list):
+    for i, cg in enumerate(team):
+        symbols = int(cg.current_stats[0] * 12 / cg.normal_stats[0]) \
+            if cg.current_stats[0] > 0 else 0
+        gfx.addstr(3 * i, 1, "%s Lv%d HP:|%s| %d/%d Atk %d Def %d Spe %d" %
+                   (cg.name, cg.level, '#' * symbols + ' ' * (12 - symbols),
+                    cg.current_stats[0], cg.normal_stats[0],
+                    cg.current_stats[1], cg.current_stats[2], cg.current_stats[3]))
