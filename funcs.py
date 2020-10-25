@@ -103,7 +103,7 @@ def choose_cg(gfx, team: list, prompt_win=None, prompt_text=None):
     choices = {}
     key_to_cg = {}
     for i, cg in enumerate(team):
-        choices[keys[i]] = (3 * i, 1, "%s Lv%d %s %d/%d Atk %d Def %d Spe %d" %
+        choices[keys[i]] = ("%s Lv%d %s %d/%d Atk %d Def %d Spe %d" %
                             (cg.name, cg.level, get_hp_string(cg),
                              cg.current_hp, cg.normal_hp,
                              cg.current_stats[0],

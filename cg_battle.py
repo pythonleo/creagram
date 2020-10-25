@@ -160,14 +160,17 @@ class CGBattle:
                 move_map[['q', 'w', 'e', 's'][i]] = move
             arg = move_map[choose(self.choice, move_map)]
         elif final_type == 'switch':
-            print_text(self.text, "Which CREAGRAM do you wish to switch into?", 0)
-            cg_info = {}
-            cg_map = {}
-            for i, cg in enumerate(self.my_team):
-                cg_info[['q', 'w', 'e', 'a', 's', 'd'][i]] =\
-                    "%s   Lv%d   HP: %d/%d" % (cg.name, cg.level, int(cg.current_stats[0]), cg.normal_stats[0])
-                cg_map[['q', 'w', 'e', 'a', 's', 'd'][i]] = cg
-            arg = cg_map[choose(self.graphics, cg_info)]
+            while True:
+                cg = choose_cg(self.graphics, self.my_team, self.text, "Which CREAGRAM do you wish to switch into?")
+                action = choose(self.choice, {'q': "SUMMARY", 'w': "SWITCH IN", 'e': "CANCEL"},
+                                self.text, "What do you wish to do with %s?" % cg.name)
+                if action == 'q':
+                    cg_summary(self.graphics, cg)
+                    print_text(self.text, "Press any key to return...", 0)
+                    self.graphics.getch()
+                elif action == 'w':
+                    arg = cg
+                    break
 
         return {'type': final_type, 'arg': arg}
 
