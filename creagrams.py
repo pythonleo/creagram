@@ -24,11 +24,12 @@ class Creagram:
         self.sprite_back = sprite_back
         self.name = name
 
-        # All stats are in the format of [HP, Atk, Def, Spe]
-        # except for `stat_stages` which is [Atk, Def, Spe]
+        # All stats are in the format of [Atk, Def, Spe]
+        # except for `base_stats` which is [HP, Atk, Def, Spe]
         self.base_stats = base_stats
-        self.normal_stats = [base_stats[0] * level // 50 + level + 10] +\
-                            [int(base_stats[i] * level // 50 + 5) for i in range(1, 4)]
+        self.normal_hp = base_stats[0] * level // 50 + level + 10
+        self.current_hp = self.normal_hp
+        self.normal_stats = [int(base_stats[i] * level // 50 + 5) for i in range(1, 4)]
         self.current_stats = self.normal_stats[:]
         self.stat_stages = [0] * 3
 
@@ -44,7 +45,9 @@ class Creagram:
         self.level += 1
         self.normal_stats = [self.base_stats[0] * self.level // 50 + self.level + 10] + \
                             [int(self.base_stats[i] * self.level // 50 + 5) for i in range(1, 4)]
-        self.current_stats = self.normal_stats[:]
+        hp_diff = self.normal_hp - self.current_hp
+        self.normal_hp = self.base_stats[0] * self.level // 50 + self.level + 10
+        self.current_hp = self.normal_hp - hp_diff
         self.check()
 
     def calc_effectiveness(self, opponent_type):
@@ -103,12 +106,12 @@ class Creagram:
         Check this CG's current state & make changes when necessary.
         Called after every move.
         """
-        if self.current_stats[0] <= 0:
+        if self.current_hp <= 0:
             print_text(self.status_win, "%s fainted!" % self.name)
             self.alive = False
         else:
             for stat, stage in enumerate(self.stat_stages):
-                self.current_stats[stat+1] = self.normal_stats[stat+1] * stat_multipliers[stage]
+                self.current_stats[stat] = self.normal_stats[stat] * stat_multipliers[stage]
 
 
 class Sysnake(Creagram):
@@ -118,8 +121,8 @@ class Sysnake(Creagram):
     exp_group = 'slow'
 
     def __init__(self, status_win, level, name="SYSNAKE"):
-        super().__init__(sysnake_sprite_front, sysnake_sprite_back, name, [53, 50, 28, 40],
-                         [hazard, defense_break], [env], level, status_win)
+        super().__init__(sysnake_sprite_front, sysnake_sprite_back, name, [45, 45, 55, 63],
+                         [hazard, defense_break, lock_throw, glitch], [env], level, status_win)
 
 
 class Prenty(Creagram):
@@ -129,5 +132,5 @@ class Prenty(Creagram):
     exp_group = 'slow'
 
     def __init__(self, status_win, level, name="PRENTY"):
-        super().__init__(prenty_sprite_front, prenty_sprite_back, name, [55, 38, 30, 35],
+        super().__init__(prenty_sprite_front, prenty_sprite_back, name, [70, 55, 45, 25],
                          [skill_attack, display_code], [skill], level, status_win)

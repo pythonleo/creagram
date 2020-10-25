@@ -1,4 +1,5 @@
 import curses as c
+from settings import base_exp
 
 
 def init_borders(scr):
@@ -67,8 +68,14 @@ def choose(scr: c.window, choices: dict, *args):
     if args:
         print_text(args[0], args[1], False)
     scr.erase()
-    for i, key in enumerate(choices):
-        scr.addstr(i, 0, "%s: %s" % (key.upper(), choices[key]))
+
+    line_num = 0
+    for key in choices:
+        scr.addstr(line_num, 0, "%s: " % key.upper())
+        for line in str(choices[key]).split('\n'):
+            scr.addstr(line_num, 3, line)
+            line_num += 1
+
     while True:
         key = scr.getkey()
         if key in choices.keys():
@@ -78,20 +85,87 @@ def choose(scr: c.window, choices: dict, *args):
 
 def print_text(text, str_to_print, pause: int = 1):
     text.erase()
+    line = 0
     for i, ch in enumerate(str_to_print):
-        text.addch(0, i, ch)
-        c.napms(40)
+        if ch == '\n':
+            line += 1
+        else:
+            text.addch(line, i, ch)
+            c.napms(40)
     if pause == 1:
         c.napms(1000)
     elif pause == -1:
         text.getch()
 
 
-def show_team(gfx: c.window, team: list):
+def choose_cg(gfx, team: list, prompt_win=None, prompt_text=None):
+    keys = ['q', 'w', 'e', 'a', 's', 'd']
+    choices = {}
+    key_to_cg = {}
     for i, cg in enumerate(team):
-        symbols = int(cg.current_stats[0] * 12 / cg.normal_stats[0]) \
-            if cg.current_stats[0] > 0 else 0
-        gfx.addstr(3 * i, 1, "%s Lv%d HP:|%s| %d/%d Atk %d Def %d Spe %d" %
-                   (cg.name, cg.level, '#' * symbols + ' ' * (12 - symbols),
-                    cg.current_stats[0], cg.normal_stats[0],
-                    cg.current_stats[1], cg.current_stats[2], cg.current_stats[3]))
+        choices[keys[i]] = (3 * i, 1, "%s Lv%d %s %d/%d Atk %d Def %d Spe %d" %
+                            (cg.name, cg.level, get_hp_string(cg),
+                             cg.current_hp, cg.normal_hp,
+                             cg.current_stats[0],
+                             cg.current_stats[1],
+                             cg.current_stats[2]))
+        key_to_cg[keys[i]] = cg
+
+    if prompt_win and prompt_text:
+        key = choose(gfx, choices, prompt_win, prompt_text)
+    else:
+        key = choose(gfx, choices)
+
+    chosen_cg = key_to_cg[key]
+    return chosen_cg
+
+
+def get_hp_string(cg):
+    hp_symbols = int(cg.current_hp * 12 / cg.normal_hp) \
+        if cg.current_hp > 0 else 0
+    return "HP:|%s|" % ('#' * hp_symbols + ' ' * (12 - hp_symbols))
+
+
+def get_exp_string(cg):
+    exp_symbols = int((cg.exp - base_exp[cg.exp_group][cg.level - 1])
+                      * 12 / (base_exp[cg.exp_group][cg.level]
+                              - base_exp[cg.exp_group][cg.level - 1]))
+    return "EXP:%s|" % ('-' * exp_symbols + ' ' * (12 - exp_symbols))
+
+
+def cg_summary(gfx, cg):
+    gfx.erase()
+
+    # sprite
+    for i, line in enumerate(cg.sprite_front):
+        gfx.addstr(i + 1, 1, line)
+
+    # basic info (name, types, level)
+    gfx.addstr(1, 27, "Name: %s (%s)" % (cg.name, cg.species))
+    gfx.addstr(1, 65, "Lv. %d" % cg.level)
+    gfx.addstr(2, 27, "Typing: %s%s" % (
+        cg.types[0].name, '' if len(cg.types) == 1 else '/' + cg.types[1].name
+    ))
+
+    # HP
+    gfx.addstr(4, 27, get_hp_string(cg))
+    gfx.addstr(4, 45, "%d/%d" % (cg.current_hp, cg.normal_hp))
+
+    # EXP
+    gfx.addstr(6, 27, get_exp_string(cg))
+    gfx.addstr(6, 45, "To next level: %d" % (base_exp[cg.exp_group][cg.level] - cg.exp))
+
+    # other stats
+    gfx.addstr(8, 27, "Attack %d      Defense %d      Speed %d" % (
+        cg.normal_stats[0], cg.normal_stats[1], cg.normal_stats[2]
+    ))
+
+    # moves
+    display_y = [11, 11, 13, 13]
+    display_x = [4, 42, 4, 42]
+    for i, move in enumerate(cg.move_set):
+        gfx.addstr(display_y[i], display_x[i], "%s (%s)" % (
+            move.name, move.type.name if move.typed else "STATUS"
+        ))
+
+    gfx.refresh()

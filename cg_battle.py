@@ -1,7 +1,6 @@
-import curses as c
-from funcs import choose, print_text
+from funcs import *
 from cg_moves import *
-from settings import base_exp, exp_yield
+from settings import exp_yield
 
 
 class CGBattle:
@@ -30,17 +29,10 @@ class CGBattle:
             self.graphics.addstr(9 + i, 0, line)
         self.graphics.addstr(6, 1, self.my_active.name)
         self.graphics.addstr(6, 14, "Lv%d" % self.my_active.level)
-        my_hp_symbols = int(self.my_active.current_stats[0] * 12 / self.my_active.normal_stats[0]) \
-            if self.my_active.current_stats[0] > 0 else 0
-        self.graphics.addstr(7, 1, "HP:|%s|" %
-                             ('#' * my_hp_symbols + ' ' * (12 - my_hp_symbols)))
+        self.graphics.addstr(7, 1, get_hp_string(self.my_active))
         self.graphics.addstr(7, 18, "%d/%d     " %
-                             (int(self.my_active.current_stats[0]), self.my_active.normal_stats[0]))
-        exp_symbols = int((self.my_active.exp -
-                          base_exp[self.my_active.exp_group][self.my_active.level - 1])
-                          * 12 / (base_exp[self.my_active.exp_group][self.my_active.level]
-                                  - base_exp[self.my_active.exp_group][self.my_active.level - 1]))
-        self.graphics.addstr(8, 1, "Exp:%s|" % ('-' * exp_symbols + ' ' * (12 - exp_symbols)))
+                             (self.my_active.current_hp, self.my_active.normal_hp))
+        self.graphics.addstr(8, 1, get_exp_string(self.my_active))
         self.graphics.refresh()
 
     def show_opponent_cg(self):
@@ -48,12 +40,7 @@ class CGBattle:
             self.graphics.addstr(i, 58, line)
         self.graphics.addstr(8, 59, self.opponent_active.name)
         self.graphics.addstr(8, 72, "Lv%d" % self.opponent_active.level)
-        opponent_symbols = int(self.opponent_active.current_stats[0] * 12 /
-                               self.opponent_active.normal_stats[0])\
-            if self.opponent_active.current_stats[0] > 0 else 0
-        self.graphics.addstr(9, 59, "HP:|%s|" %
-                             ('#' * opponent_symbols + ' ' *
-                              (12 - opponent_symbols)))
+        self.graphics.addstr(9, 59, get_hp_string(self.opponent_active))
         self.graphics.refresh()
 
     def show_battlers(self):
@@ -102,7 +89,7 @@ class CGBattle:
         my_action = self.get_my_action()
         opponent_action = self.ai_get_opponent_action()
         if my_action['type'] == 'fight' and opponent_action['type'] == 'fight':
-            if self.my_active.current_stats[3] > self.opponent_active.current_stats[3]:
+            if self.my_active.current_stats[2] > self.opponent_active.current_stats[2]:
                 self.my_active.use_move(self.opponent_active, my_action['arg'])
                 self.refresh_graphics()
                 self.check()

@@ -16,9 +16,12 @@ def main(_):
     choice.immedok(True)
     init_borders(scr)
     graphics.keypad(True)
-    start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100),
-              [Opponent((3, 3), 'X', 'a', 'b', [Prenty(text, 1)], '')],
-              Player("PLAYER", [Sysnake(text, 50, "Snaky")]))
+    start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100), [
+        GrassPatch(3, 3, 10, 10, [(.5, "Prenty"), (.55, "Sysnake")], [5, 6, 7])
+    ], Player("PLAYER", [Sysnake(text, 10), Prenty(text, 5)]))
+
+    """cg_summary(graphics, Sysnake(text, 5))
+    graphics.getch()"""
 
 
 c.wrapper(main)

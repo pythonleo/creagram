@@ -1,5 +1,6 @@
 class CGType:
-    def __init__(self, weak=None, resist=None, immune=None):
+    def __init__(self, name, weak=None, resist=None, immune=None):
+        self.name = name
         self.weak = weak
         self.resist = resist
         self.immune = immune
@@ -15,11 +16,13 @@ class CGType:
             return 1
 
 
-env = CGType()
-virus = CGType()
-secure = CGType()
-bug = CGType()
-skill = CGType()
+status = CGType('STATUS')
+
+env = CGType('ENV')
+virus = CGType('VIRUS')
+secure = CGType('SECURE')
+bug = CGType('BUG')
+skill = CGType('SKILL')
 env.weak, env.resist, env.immune = secure, bug, skill
 virus.weak, virus.resist, virus.immune = bug, skill, env
 secure.weak, secure.resist, secure.immune = skill, env, virus

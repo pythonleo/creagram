@@ -1,5 +1,5 @@
 from cg_types import *
-from random import random as r
+from random import random as r, randint
 
 
 class CGMove:
@@ -15,8 +15,11 @@ class CGMove:
 
 
 class CGStatusMove(CGMove):
+    typed = False
+
     def __init__(self, stat, increment_stage: int, name, affect_self=False):
         super().__init__(name)
+        self.type = status
         self.stat = stat
         self.increment_stage = increment_stage
         self.affect_self = affect_self
@@ -31,6 +34,8 @@ class CGStatusMove(CGMove):
 
 
 class CGDmgMove(CGMove):
+    typed = True
+
     def __init__(self, power, accuracy, move_type, name):
         super().__init__(name)
         self.power = power
@@ -40,21 +45,23 @@ class CGDmgMove(CGMove):
     def use(self, user, opponent):
         if r() <= self.accuracy:
             eff = opponent.calc_effectiveness(self.type)
-            opponent.current_stats[0] -= int((self.power * user.current_stats[1] /
-                                              opponent.current_stats[2] *
-                                              (2 / 5 * user.level + 2) + 2) / 50 * eff)
-            if opponent.current_stats[0] < 0:
-                opponent.current_stats[0] = 0
+            opponent.current_hp -= int((self.power * user.current_stats[0] /
+                                        opponent.current_stats[1] *
+                                        (2 / 5 * user.level + 2) + 2) / 50 * eff *
+                                       (1.5 if self.type in user.types else 1) *
+                                       randint(85, 100) / 100)
+            if opponent.current_hp < 0:
+                opponent.current_hp = 0
             return eff
         else:
             return -1
 
 
-hazard = CGDmgMove(30, 1, env, "HAZARD")
-skill_attack = CGDmgMove(30, 1, skill, "SKILL ATTACK")
-viral_wave = CGDmgMove(30, 1, virus, "VIRAL WAVE")
-lock_throw = CGDmgMove(30, 1, secure, "LOCK THROW")
-glitch = CGDmgMove(30, 1, bug, "GLITCH")
+hazard = CGDmgMove(40, 1, env, "HAZARD")
+skill_attack = CGDmgMove(40, 1, skill, "SKILL ATTACK")
+viral_wave = CGDmgMove(40, 1, virus, "VIRAL WAVE")
+lock_throw = CGDmgMove(40, 1, secure, "LOCK THROW")
+glitch = CGDmgMove(40, 1, bug, "GLITCH")
 
 weakest = CGDmgMove(0, 0, env, '')
 
