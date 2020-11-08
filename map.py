@@ -1,6 +1,6 @@
 from map_obj import *
 from funcs import *
-from settings import default_player_pos
+from settings import default_player_pos, menu_items, menu_actions
 
 
 def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
@@ -96,6 +96,9 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
         elif ch in (c.KEY_ENTER, 10):
             if isinstance(looking_at, Interactive):
                 looking_at.on_interacted_with(player, gfx, text, choice)
+        elif ch == ord('x'):
+            ch = choose(choice, menu_items)
+            exec(menu_actions[ch])
         elif ch == ord('q'):
             raise ValueError('exit')
 

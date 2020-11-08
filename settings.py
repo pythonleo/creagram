@@ -39,3 +39,13 @@ exp_yield = {
 
 # map settings
 default_player_pos = (10, 10)
+
+# menu items
+menu_items = {
+    'q': "CREAGRAMS",
+    'w': "CANCEL"
+}
+menu_actions = {
+    'q': "cg_menu(gfx, text, choice, player)",
+    'w': "pass"
+}

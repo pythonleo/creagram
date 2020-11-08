@@ -18,10 +18,7 @@ def main(_):
     graphics.keypad(True)
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100), [
         GrassPatch(3, 3, 10, 10, [(.5, "Prenty"), (.55, "Sysnake")], [5, 6, 7])
-    ], Player("PLAYER", [Sysnake(text, 10), Prenty(text, 5)]))
-
-    """cg_summary(graphics, Sysnake(text, 5))
-    graphics.getch()"""
+    ], Player("PLAYER", [Sysnake(text, 99), Prenty(text, 5)]))
 
 
 c.wrapper(main)

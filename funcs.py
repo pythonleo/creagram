@@ -169,3 +169,17 @@ def cg_summary(gfx, cg):
         ))
 
     gfx.refresh()
+
+
+def cg_menu(graphics, text, choice, player):
+    while True:
+        cg = choose_cg(graphics, player.team, text, "Choose a CREAGRAM.")
+        action = choose(choice, {'q': "SUMMARY", 'w': "QUIT"},
+                        text, "What do you wish to do with %s?" % cg.name)
+        if action == 'q':
+            cg_summary(graphics, cg)
+            print_text(text, "Press any key to return...", 0)
+            graphics.getch()
+        elif action == 'w':
+            text.erase()
+            break
