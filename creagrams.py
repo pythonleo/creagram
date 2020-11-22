@@ -17,6 +17,8 @@ class Creagram:
 
     species = ''
     exp_group = None
+    is_wild = False
+    is_opponent = False
 
     def __init__(self, sprite_front, sprite_back, name, base_stats,
                  move_set, types, level=1, status_win=None):
@@ -72,7 +74,9 @@ class Creagram:
         """Use a move on an opponent"""
         if move in self.move_set:
             if self.alive:
-                print_text(self.status_win, "%s used %s!" % (self.name, move.name))
+                print_text(self.status_win, "%s%s used %s!" % (
+                    "The wild " if self.is_wild else "The opposing " if self.is_opponent else '',
+                    self.name, move.name))
                 status_code = move.use(self, opponent)
                 self.status_win.erase()
 
@@ -95,8 +99,10 @@ class Creagram:
                     change = {-3: "severely fell", -2: "harshly fell", -1: "fell",
                               1: "rose", 2: "rose sharply", 3: "rose drastically"}[move.increment_stage]\
                         if status_code == -2 else {-3: "won't go any higher", -4: "won't go any lower"}[status_code]
-                    print_text(self.status_win, "%s's %s %s!" % (
-                        self.name if move.affect_self else opponent.name, stat_name, change
+                    affected = self if move.affect_self else opponent
+                    print_text(self.status_win, "%s%s's %s %s!" % (
+                        "The wild " if affected.is_wild else "The opposing " if affected.is_opponent else '',
+                        affected.name, stat_name, change
                     ))
         else:
             raise ValueError("Move not in user's move set.")

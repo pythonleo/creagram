@@ -58,7 +58,7 @@ class GrassPatch(Interactive):
         rand = random()
         for chance, species in self.spawn:
             if rand < chance:
-                import creagrams as cg  # noqa (used in eval(), PC doesn't know that)
+                import creagrams as cg  # noqa (used in eval(), PyCharm doesn't know that)
                 CGBattle(player, eval("cg.%s(text, %d)"
                                       % (species, rand_choice(self.levels))),
                          graphics, text, choice).start_battle()

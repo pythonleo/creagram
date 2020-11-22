@@ -10,6 +10,13 @@ class CGBattle:
         self.my_team = player.team
         self.opponent = opponent
         self.opponent_team = [opponent] if is_wild else opponent.team
+
+        for cg in self.opponent_team:
+            if is_wild:
+                cg.is_wild = True
+            else:
+                cg.is_opponent = True
+
         self.graphics: c.window = graphics_win
         self.text: c.window = text_win
         self.choice: c.window = choice_win
@@ -228,15 +235,16 @@ class CGBattle:
 
         self.text.erase()
         if self.ran:
-            print_text(self.text, 'You got away safely!', -1)
+            print_text(self.text, 'You got away safely!', 0)
         elif self.my_team:
-            if self.is_wild:
-                pass
-            else:
-                print_text(self.text, self.opponent.lose_text, -1)
+            if not self.is_wild:
+                print_text(self.text, self.opponent.lose_text, 0)
         elif self.opponent_team:
             print_text(self.text, 'You have no usable CREAGRAM\'s left!')
-            print_text(self.text, 'You blacked out!', -1)
+            print_text(self.text, 'You blacked out!', 0)
 
         self.my_active.current_stats = self.my_active.normal_stats[:]
         self.my_active.stat_stages = [0] * 3
+
+        self.graphics.erase()
+        self.text.erase()

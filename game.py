@@ -16,8 +16,9 @@ def main(_):
     choice.immedok(True)
     init_borders(scr)
     graphics.keypad(True)
+    graphics.refresh()
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100), [
-        GrassPatch(3, 3, 10, 10, [(.5, "Prenty"), (.55, "Sysnake")], [5, 6, 7])
+        GrassPatch(3, 3, 10, 10, [(.1, "Prenty"), (.15, "Sysnake")], [5, 6, 7])
     ], Player("PLAYER", [Sysnake(text, 99), Prenty(text, 5)]))
 
 
