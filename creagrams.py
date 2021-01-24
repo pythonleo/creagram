@@ -60,6 +60,8 @@ class Creagram:
 
     def gain_exp(self, exp):
         """Gives the CG experience points."""
+        if self.level == 100:
+            return
         print_text(self.status_win,
                    "%s gained %d Exp. Point(s)!" % (self.name, exp))
         self.exp += exp

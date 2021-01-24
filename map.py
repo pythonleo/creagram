@@ -1,6 +1,7 @@
 from map_obj import *
 from funcs import *
 from settings import default_player_pos
+from menu import start_menu
 
 
 def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
@@ -96,6 +97,8 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
         elif ch in (c.KEY_ENTER, 10):
             if isinstance(looking_at, Interactive):
                 looking_at.on_interacted_with(player, gfx, text, choice)
+        elif ch == ord('x'):
+            start_menu((2, 2), (12, 12), {'q': 'nth'}, {'q': lambda: None})
         elif ch == ord('q'):
             raise ValueError('exit')
 
