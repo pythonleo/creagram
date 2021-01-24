@@ -93,7 +93,10 @@ class Creagram:
                 elif 0 < status_code < 1:
                     print_text(self.status_win, "It's not very effective...")
                 elif status_code == 0:
-                    print_text(self.status_win, "It doesn't affect %s..." % opponent.name)
+                    print_text(self.status_win, "It doesn't affect %s%s..." %
+                               ("the wild " if opponent.is_wild
+                                else "the opposing " if opponent.is_opponent else '',
+                                opponent.name))
                 elif status_code == -1:
                     print_text(self.status_win, "But it missed!")
                 elif status_code <= -2:

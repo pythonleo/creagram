@@ -19,7 +19,7 @@ def main(_):
     graphics.refresh()
     start_map(graphics, text, choice, (1, 1), (17, 78), (100, 100), [
         GrassPatch(3, 3, 10, 10, [(.5, "Prenty"), (.55, "Sysnake")], [5, 6, 7])
-    ], Player("PLAYER", [Sysnake(text, 100), Prenty(text, 5)]))
+    ], Player("PLAYER", [Sysnake(text, 10), Prenty(text, 5)]))
 
 
 c.wrapper(main)
