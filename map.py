@@ -111,7 +111,7 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
             if isinstance(looking_at, Interactive):
                 looking_at.on_interacted_with(player, gfx, text, choice)
         elif ch == ord('x'):
-            start_menu((2, 2), (12, 12), {'q': 'nth'}, {'q': lambda: None})
+            start_menu((2, 2), (12, 12), {'q': 'CREAGRAMS'}, {'q': lambda: cg_menu(gfx, text, player)})
         elif ch == ord('q'):
             raise ValueError('exit')
 

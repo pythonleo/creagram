@@ -1,6 +1,6 @@
 from cg_moves import *
 from cg_sprites import *
-from funcs import print_text
+from funcs import print_text, capitalize
 from curses import napms
 from settings import *
 
@@ -43,6 +43,8 @@ class Creagram:
 
         self.exp = base_exp[self.exp_group][self.level - 1]
 
+        self.shown_name = self.name
+
     def lv_up(self):
         self.level += 1
         self.normal_stats = [self.base_stats[0] * self.level // 50 + self.level + 10] + \
@@ -76,9 +78,8 @@ class Creagram:
         """Use a move on an opponent"""
         if move in self.move_set:
             if self.alive:
-                print_text(self.status_win, "%s%s used %s!" % (
-                    "The wild " if self.is_wild else "The opposing " if self.is_opponent else '',
-                    self.name, move.name))
+                print_text(self.status_win, "%s used %s!" % (capitalize(self.shown_name),
+                                                             move.name))
                 status_code = move.use(self, opponent)
                 self.status_win.erase()
 
@@ -93,10 +94,7 @@ class Creagram:
                 elif 0 < status_code < 1:
                     print_text(self.status_win, "It's not very effective...")
                 elif status_code == 0:
-                    print_text(self.status_win, "It doesn't affect %s%s..." %
-                               ("the wild " if opponent.is_wild
-                                else "the opposing " if opponent.is_opponent else '',
-                                opponent.name))
+                    print_text(self.status_win, "It doesn't affect %s%s..." % (self.shown_name, opponent.name))
                 elif status_code == -1:
                     print_text(self.status_win, "But it missed!")
                 elif status_code <= -2:
@@ -105,10 +103,7 @@ class Creagram:
                               1: "rose", 2: "rose sharply", 3: "rose drastically"}[move.increment_stage]\
                         if status_code == -2 else {-3: "won't go any higher", -4: "won't go any lower"}[status_code]
                     affected = self if move.affect_self else opponent
-                    print_text(self.status_win, "%s%s's %s %s!" % (
-                        "The wild " if affected.is_wild else "The opposing " if affected.is_opponent else '',
-                        affected.name, stat_name, change
-                    ))
+                    print_text(self.status_win, "%s's %s %s!" % (capitalize(affected.shown_name), stat_name, change))
         else:
             raise ValueError("Move not in user's move set.")
 
@@ -123,6 +118,11 @@ class Creagram:
         else:
             for stat, stage in enumerate(self.stat_stages):
                 self.current_stats[stat] = self.normal_stats[stat] * stat_multipliers[stage]
+
+        if self.is_wild:
+            self.shown_name = 'the wild ' + self.name
+        elif self.is_opponent:
+            self.shown_name = 'the opposing ' + self.name
 
 
 class Sysnake(Creagram):

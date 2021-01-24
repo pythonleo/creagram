@@ -29,6 +29,9 @@ class CGBattle:
         if is_wild and len(self.opponent_team) > 1:
             raise ValueError("More than one wild CGs appearing at once.")
 
+        for cg in self.opponent_team:
+            cg.check()
+
         self.participated = [self.my_active]
 
     def show_my_cg(self):

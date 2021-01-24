@@ -101,7 +101,7 @@ def print_text(text, str_to_print, pause: int = 1):
 def choose_cg(gfx, team: list, prompt_win=None, prompt_text=None):
     keys = ['q', 'w', 'e', 'a', 's', 'd']
     choices = {}
-    key_to_cg = {}
+    key_to_cg = {'x': None}
     for i, cg in enumerate(team):
         choices[keys[i]] = ("%s Lv%d %s %d/%d Atk %d Def %d Spe %d" %
                             (cg.name, cg.level, get_hp_string(cg),
@@ -110,6 +110,7 @@ def choose_cg(gfx, team: list, prompt_win=None, prompt_text=None):
                              cg.current_stats[1],
                              cg.current_stats[2]))
         key_to_cg[keys[i]] = cg
+    choices['x'] = 'Exit'
 
     if prompt_win and prompt_text:
         key = choose(gfx, choices, prompt_win, prompt_text)
@@ -173,15 +174,16 @@ def cg_summary(gfx, cg):
     gfx.refresh()
 
 
-def cg_menu(graphics, text, choice, player):
+def cg_menu(graphics, text, player):
     while True:
-        cg = choose_cg(graphics, player.team, text, "Choose a CREAGRAM.")
-        action = choose(choice, {'q': "SUMMARY", 'w': "QUIT"},
-                        text, "What do you wish to do with %s?" % cg.name)
-        if action == 'q':
-            cg_summary(graphics, cg)
-            print_text(text, "Press any key to return...", 0)
-            graphics.getch()
-        elif action == 'w':
-            text.erase()
+        cg = choose_cg(graphics, player.team, text, "Choose a CREAGRAM in order to see its SUMMARY.")
+        if not cg:
             break
+        cg_summary(graphics, cg)
+        print_text(text, 'Press any key to return...', -1)
+
+    text.erase()
+
+
+def capitalize(a: str):
+    return a[0].upper() + a[1:]
