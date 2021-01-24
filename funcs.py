@@ -64,7 +64,7 @@ def input_str(y, x, scr: c.window, max_len=0, prompt=''):
     return res
 
 
-def choose(scr: c.window, choices: dict, *args):
+def choose(scr, choices: dict, *args):
     if args:
         print_text(args[0], args[1], False)
     scr.erase()
@@ -127,6 +127,8 @@ def get_hp_string(cg):
 
 
 def get_exp_string(cg):
+    if cg.level == 100:
+        return ''
     exp_symbols = int((cg.exp - base_exp[cg.exp_group][cg.level - 1])
                       * 12 / (base_exp[cg.exp_group][cg.level]
                               - base_exp[cg.exp_group][cg.level - 1]))
