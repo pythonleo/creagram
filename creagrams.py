@@ -113,7 +113,7 @@ class Creagram:
         Called after every move.
         """
         if self.current_hp <= 0:
-            print_text(self.status_win, "%s fainted!" % self.name)
+            print_text(self.status_win, "%s fainted!" % capitalize(self.shown_name))
             self.alive = False
         else:
             for stat, stage in enumerate(self.stat_stages):

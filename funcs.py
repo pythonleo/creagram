@@ -155,8 +155,9 @@ def cg_summary(gfx, cg):
     gfx.addstr(4, 45, "%d/%d" % (cg.current_hp, cg.normal_hp))
 
     # EXP
-    gfx.addstr(6, 27, get_exp_string(cg))
-    gfx.addstr(6, 45, "To next level: %d" % (base_exp[cg.exp_group][cg.level] - cg.exp))
+    if cg.level < 100:
+        gfx.addstr(6, 27, get_exp_string(cg))
+        gfx.addstr(6, 45, "To next level: %d" % (base_exp[cg.exp_group][cg.level] - cg.exp))
 
     # other stats
     gfx.addstr(8, 27, "Attack %d      Defense %d      Speed %d" % (

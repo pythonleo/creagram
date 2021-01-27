@@ -3,6 +3,8 @@ from funcs import *
 from settings import default_player_pos
 from menu import start_menu
 
+quitting = False
+
 
 def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
     main_map = area = Map(size[0], size[1], objects)
@@ -39,6 +41,10 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
             main_map.pd.addstr(o.start_y + i, o.start_x, line)
     main_map.pd.addstr(player.start_y, player.start_x, player.string_shown)
     main_map.pd.refresh(y_now, x_now, top_lf[0], top_lf[1], btm_rt[0], btm_rt[1])
+
+    def quit_game():
+        global quitting
+        quitting = True
 
     def check_trigger():
         if (player.start_y, player.start_x) in triggers:
@@ -111,9 +117,12 @@ def start_map(gfx, text, choice, top_lf, btm_rt, size, objects, player):
             if isinstance(looking_at, Interactive):
                 looking_at.on_interacted_with(player, gfx, text, choice)
         elif ch == ord('x'):
-            start_menu((2, 2), (12, 12), {'q': 'CREAGRAMS'}, {'q': lambda: cg_menu(gfx, text, player)})
-        elif ch == ord('q'):
-            raise ValueError('exit')
+            start_menu((1, 64), (12, 78), {'q': 'CREAGRAMS', 'w': 'QUIT'},
+                       {'q': lambda: cg_menu(gfx, text, player), 'w': quit_game})
+
+        global quitting
+        if quitting:
+            break
 
         if (player.start_y, player.start_x) in doors:
             to_go = doors[(player.start_y, player.start_x)]

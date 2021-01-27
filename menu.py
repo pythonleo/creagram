@@ -9,7 +9,7 @@ def start_menu(begin, end, choices, actions):
     menu_win.border('|', '|', '-', '-', '+', '+', '+', '+')
     menu_win.noutrefresh()
     choices_win = menu_win.derwin(end[0] - begin[0] - 2, end[1] - begin[1] - 2, 1, 1)
-    choices['x'] = 'Exit'
+    choices['x'] = 'EXIT'
     actions['x'] = lambda: None
 
     key = choose(choices_win, choices)
